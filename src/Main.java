@@ -1,3 +1,5 @@
+
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +12,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.awt.Image;
+import java.io.IOException;
+import java.net.URL;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 
 
@@ -42,6 +51,9 @@ import javax.swing.*;
 
 // Program for print data in JSON format.
 public class Main {
+
+    final int WIDTH = 700;
+    final int HEIGHT = 700;
     public String searchTerm = "";
     public JFrame welcomeFrame;
     public JFrame mainFrame;
@@ -51,10 +63,14 @@ public class Main {
     public JPanel thisPanel = new JPanel(new GridLayout(1,2));
     public JLabel howMany = new JLabel();
     public JButton go = new JButton("Continue");
+    public JPanel extraPanel = new JPanel(new GridLayout(3, 3));
+    public JPanel guessPanel = new JPanel(new GridLayout(5,1));
     public String[] topfive;
     public String[] topten;
     public String[] toptwenty;
+    public String artistName;
     public boolean huh = false;
+    public Image artistPic;
 
     public static void main(String args[]) throws ParseException {
         // In java JSONObject is used to create JSON object
@@ -76,9 +92,8 @@ public class Main {
         topfive = new String[5];
         topten = new String[10];
         toptwenty = new String[20];
-        pull("Lorde3");
         welcomeFrame = new JFrame("Genius API Game!");
-        welcomeFrame.setSize(700,700);
+        welcomeFrame.setSize(WIDTH,HEIGHT);
         welcomeGUI();
     }
 
@@ -93,7 +108,7 @@ public class Main {
 
         try {
 
-            URL url = new URL("https://api.genius.com/search?q="+search+"&access_token=EA74kgu6YMC3BQ53x-cGY-aNiy-pdijBQoQD0vd_qG-fdWUnD9XWVQ93nWP1EdMv");
+            URL url = new URL("https://api.genius.com/search?q="+replace+"&access_token=EA74kgu6YMC3BQ53x-cGY-aNiy-pdijBQoQD0vd_qG-fdWUnD9XWVQ93nWP1EdMv");
            // URL url = new URL("https://api.genius.com/search?q=Taylor%20Swift&access_token=EA74kgu6YMC3BQ53x-cGY-aNiy-pdijBQoQD0vd_qG-fdWUnD9XWVQ93nWP1EdMv");
 
 
@@ -143,16 +158,31 @@ public class Main {
         if(test.isEmpty()) {
             howMany.setText("Artist not found.");
             welcomeFrame.setVisible(true);
+            thisPanel.remove(extraPanel);
             huh = true;
         } else {
             huh = false;
             org.json.simple.JSONObject hii = (org.json.simple.JSONObject) test.get(1);
             org.json.simple.JSONObject hii2 = (org.json.simple.JSONObject) hii.get("result");
             org.json.simple.JSONObject primArtist = (org.json.simple.JSONObject) hii2.get("primary_artist");
+            System.out.println(primArtist.get("image_url"));
+
+            try {
+                URL picURL = new URL((String) primArtist.get("image_url"));
+                artistPic = ImageIO.read(picURL);
+                artistPic = artistPic.getScaledInstance(WIDTH/2, HEIGHT/2, Image.SCALE_DEFAULT);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
 
             try {
                 URL url = new URL("https://api.genius.com" + primArtist.get("api_path") + "/songs?sort=popularity&access_token=EA74kgu6YMC3BQ53x-cGY-aNiy-pdijBQoQD0vd_qG-fdWUnD9XWVQ93nWP1EdMv");
                 pull2(url);
+
+
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -214,6 +244,7 @@ public class Main {
         }
     }
 
+
     public void welcomeGUI(){
         welcomeFrame.setLayout(new GridLayout(2,1));
         JPanel aaah = new JPanel(new GridLayout(2,1));
@@ -248,10 +279,7 @@ public class Main {
 
         welcomeFrame.add(panel);
         welcomeFrame.setVisible(true);
-    }
 
-    public void popUpGUI() {
-        howMany.setText("How many songs do you think you can guess?");
         JButton five = new JButton("5");
         five.setActionCommand("5");
         five.addActionListener(new ButtonClickListener());
@@ -259,7 +287,7 @@ public class Main {
         JButton ten = new JButton("10");
         JButton twenty = new JButton("20");
 
-        JPanel extraPanel = new JPanel(new GridLayout(3, 3));
+
         extraPanel.add(new JLabel());
         extraPanel.add(new JLabel());
         extraPanel.add(new JLabel());
@@ -270,18 +298,79 @@ public class Main {
         extraPanel.add(new JLabel());
         extraPanel.add(new JLabel());
 
+    }
+
+    public void popUpGUI() {
+
+        howMany.setText("How many songs do you think you can guess?");
         thisPanel.add(extraPanel);
-
         panel.add(thisPanel);
-
         welcomeFrame.setVisible(true);
 
     }
 
     public void fiveGUI() {
         welcomeFrame.dispose();
-        mainFrame = new JFrame("Guess!");
-        mainFrame.setSize(700,700);
+        mainFrame = new JFrame("Guess "+artistName+"'s Top 5 Songs!");
+        mainFrame.setLayout(new GridLayout(2,2));
+        mainFrame.setSize(WIDTH,HEIGHT);
+        JLabel pic = new JLabel(new ImageIcon(artistPic));
+        JPanel topLeft = new JPanel(new GridLayout(3,1));
+        JPanel subLeft = new JPanel();
+        JButton help = new JButton("I need a hint!");
+        help.setPreferredSize(new Dimension(150,20));
+        subLeft.add(help);
+        topLeft.add(new JLabel());
+        JLabel instructions = new JLabel("<html>Guess "+artistName+"'s Top 5 Songs!<br/>You have 3 wrong guesses remaining.<html>", JLabel.CENTER);
+        topLeft.add(instructions);
+        topLeft.add(subLeft);
+        mainFrame.add(topLeft);
+        mainFrame.add(pic);
+
+        JPanel pPanel = new JPanel(new GridLayout(7,1));
+
+
+        JLabel guesss = new JLabel ("Enter your guesses here!", JLabel.CENTER);
+        JTextArea guess = new JTextArea();
+
+        guess.setFont(new Font("Arial", Font.BOLD, 25));
+        guess.setLineWrap(true);
+        guess.setWrapStyleWord(true);
+
+
+        JPanel uno = new JPanel();
+        uno.add(new JLabel("1"));
+        JPanel dos = new JPanel();
+        dos.add(new JLabel("2"));
+        JPanel tres = new JPanel();
+        tres.add(new JLabel("3"));
+        JPanel cuatro = new JPanel();
+        cuatro.add(new JLabel("4"));
+        JPanel cinco = new JPanel();
+        cinco.add(new JLabel("5"));
+
+        pPanel.add(new JLabel());
+        pPanel.add(uno);
+        pPanel.add(dos);
+        pPanel.add(tres);
+        pPanel.add(cuatro);
+        pPanel.add(cinco);
+        pPanel.add(new JLabel());
+
+        guessPanel.add(guesss);
+        guessPanel.add(guess);
+        guessPanel.add(new JLabel());
+        //guessPanel.add(new JLabel());
+        /*guessPanel.add(new JLabel());
+        guessPanel.add(new JLabel());
+        guessPanel.add(new JLabel());
+        guessPanel.add(new JLabel());
+
+         */
+
+
+        mainFrame.add(pPanel);
+        mainFrame.add(guessPanel);
         mainFrame.setVisible(true);
     }
 
@@ -291,7 +380,8 @@ public class Main {
             try {
                 String command = e.getActionCommand();
                 if (command.equals("continue")) {
-                    pull(type.getText());
+                    artistName = type.getText();
+                    pull(artistName);
                     if(huh == false) {
                         popUpGUI();
                         //go.setActionCommand("disabled");
