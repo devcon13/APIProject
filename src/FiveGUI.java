@@ -4,8 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class FiveGUI {
-    public static final int width = 700;
-    public static final int height = 700;
+    public static final int width = 1500;
+    public static final int height = 950;
     public static JFrame main = new JFrame("Guess " + Main.artist.name + "'s Top 5 Songs!");
     public static JTextArea userGuess = new JTextArea();
     public static JPanel panel = new JPanel();
@@ -17,6 +17,8 @@ public class FiveGUI {
     public FiveGUI() {
         panel.removeAll();
         WelcomeGUI.main.dispose();
+        new HintsGUI(5);
+        HintsGUI.main.dispose();
         correct = 0;
 
         panel.setLayout(new GridLayout(2, 2));
@@ -25,20 +27,28 @@ public class FiveGUI {
 
         // Top Left
         JPanel topLeft = new JPanel(new GridLayout(3, 1));
-        instructions = new JLabel("<html>Guess " + Main.artist.name + "'s Top 5 Songs!<br/>You have " + guesses + " wrong guesses remaining.<html>", JLabel.CENTER);
+        instructions = new JLabel("<html><font color='white'>Guess " + Main.artist.name + "'s Top 5 Songs!<br/>You have <font color='yellow'>" + guesses + "<font color='white'> wrong guesses remaining.<html>", JLabel.CENTER);
+        instructions.setFont(new Font("Trebuchet MS", Font.BOLD, 30));
+        instructions.setForeground(Color.WHITE);
         JPanel subLeft = new JPanel();
+        subLeft.setBackground(Color.BLACK);
         JButton help = new JButton("I need a hint!");
         help.addActionListener(new ButtonClickListener());
         help.setActionCommand("help");
+        help.setBackground(Color.YELLOW);
+        help.setForeground(Color.BLACK);
+        help.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
         help.setPreferredSize(new Dimension(125, 20));
         subLeft.add(help);
         topLeft.add(new JLabel());
         topLeft.add(instructions);
         topLeft.add(subLeft);
+        topLeft.setBackground(Color.BLACK);
         panel.add(topLeft);
 
         // Top Right
         JLabel pic = new JLabel(new ImageIcon(Main.artist.pic));
+        panel.setBackground(Color.BLACK);
         panel.add(pic);
 
         // Bottom Left
@@ -46,22 +56,37 @@ public class FiveGUI {
         bottomLeft.add(new JLabel());
         for(int i = 0; i < songs.length; i++) {
             JPanel temporary = new JPanel();
-            temporary.add(new JLabel(Integer.toString(i+1)));
+            temporary.setBackground(Color.BLACK);
+            JLabel num = new JLabel((Integer.toString(i+1)) + " ");
+            num.setForeground(Color.WHITE);
+            num.setFont(new Font("Trebuchet MS", Font.BOLD, 50));
+            temporary.add(num);
             songs[i] = new JLabel();
+            songs[i].setForeground(Color.WHITE);
+            songs[i].setFont(new Font("Trebuchet MS", Font.BOLD, 50));
             temporary.add(songs[i]);
             bottomLeft.add(temporary);
         }
         bottomLeft.add(new JLabel());
+        bottomLeft.setBackground(Color.BLACK);
         panel.add(bottomLeft);
 
         // Bottom Right
         JPanel bottomRight = new JPanel(new GridLayout(5, 1));
         JLabel guess = new JLabel("Enter your guesses here! (Case Sensitive)", JLabel.CENTER);
-        userGuess.setFont(new Font("Arial", Font.BOLD, 25));
+        guess.setFont(new Font("Trebuchet MS", Font.PLAIN, 20));
+        guess.setForeground(Color.WHITE);
+        userGuess.setFont(new Font("Trebuchet MS", Font.PLAIN, 25));
+        userGuess.setBackground(Color.BLACK);
+        userGuess.setForeground(Color.YELLOW);
         userGuess.setLineWrap(true);
         userGuess.setWrapStyleWord(true);
         JPanel enterPanel = new JPanel();
         JButton enter = new JButton("Enter");
+        enter.setBackground(Color.YELLOW);
+        enter.setForeground(Color.BLACK);
+        enter.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
+        enterPanel.setBackground(Color.BLACK);
         enter.addActionListener(new ButtonClickListener());
         enter.setActionCommand("enter");
         enter.setPreferredSize(new Dimension(75, 20));
@@ -69,6 +94,7 @@ public class FiveGUI {
         bottomRight.add(guess);
         bottomRight.add(userGuess);
         bottomRight.add(enterPanel);
+        bottomRight.setBackground(Color.BLACK);
         panel.add(bottomRight);
         main.add(panel);
         main.setVisible(true);
@@ -95,7 +121,7 @@ public class FiveGUI {
               else {
                   guesses--;
                   if (guesses != 0) {
-                      instructions.setText("<html>Guess " + Main.artist.name + "'s Top 5 Songs!<br/>You have " + guesses + " wrong guesses remaining.<html>");
+                      instructions.setText("<html><font color='white'>Guess " + Main.artist.name + "'s Top 5 Songs!<br/>You have <font color='yellow'>" + guesses + "<font color='white'> wrong guesses remaining.<html>");
                   } else {
                       new LoseGUI(5);
                   }

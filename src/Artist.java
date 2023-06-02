@@ -66,7 +66,7 @@ public class Artist {
             org.json.simple.JSONObject primArtist = (org.json.simple.JSONObject) hii2.get("primary_artist");
 
             try { // get picture and resize
-                pic = ImageIO.read(new URL((String) primArtist.get("image_url"))).getScaledInstance(WelcomeGUI.width / 2, WelcomeGUI.height / 2, Image.SCALE_DEFAULT);
+                pic = ImageIO.read(new URL((String) primArtist.get("image_url"))).getScaledInstance(WelcomeGUI.width / 3, WelcomeGUI.height / 2, Image.SCALE_DEFAULT);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -124,8 +124,13 @@ public class Artist {
     }
 
     public boolean songMatch(String guess, int songLimit) {
+        guess = guess.replace("'", "’");
+        guess = guess.replace(" ", "");
+        guess = guess.replace("\u200B", "");
+        System.out.println(guess);
         for (int i = 0; i < songLimit; i++) {
-            if (guess.equals(songs[i])) {
+            songs[i] = songs[i].replace("\u200B", "");
+            if (guess.equals(songs[i].replace(" ", ""))) {
                 songNumber = i;
                 return true;
             }

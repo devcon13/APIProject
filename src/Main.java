@@ -33,8 +33,6 @@ public class Main {
 
     public Main() {
         new WelcomeGUI();
-        new HintsGUI(5);
-        //new AnswersGUI(5);
     }
     public static void newArtist(String name){
         artist = new Artist(name);
